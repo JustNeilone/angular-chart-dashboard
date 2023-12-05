@@ -1,0 +1,91 @@
+
+
+<div class="flex flex-row justify-around p-2">
+  <mat-form-field class="basis-1/4">
+    <mat-label>Title</mat-label>
+    <input matInput [formControl]="title">
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>Type</mat-label>
+    <mat-select [formControl]="type" [disabled]="addingDisabled">
+      <mat-select-trigger>
+        {{type.value || ''}}
+      </mat-select-trigger>
+      <mat-option *ngFor="let type of chartTypes" [value]="type">{{type}}</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>Colour</mat-label>
+    <mat-select [formControl]="colour" [disabled]="addingDisabled">
+      <mat-select-trigger>
+        {{colour.value || ''}}
+      </mat-select-trigger>
+      <mat-option *ngFor="let scheme of chartColourSchemes; index as i" [value]="scheme">Colour set {{i + 1}}</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>Data</mat-label>
+    <mat-select [formControl]="dataOptions" multiple [disabled]="addingDisabled">
+      <mat-select-trigger>
+        <!-- {{dataOptions.value?.[0] || ''}} -->
+        <span *ngIf="(dataOptions.value?.length || 0) > 0" class="example-additional-selection">
+          (+{{(dataOptions.value?.length || 0)}} {{dataOptions.value?.length === 1 ? 'set' : 'sets'}})
+        </span>
+      </mat-select-trigger>
+      <mat-option *ngFor="let data of chartDataOptions; index as i" [value]="data">Data set {{i + 1}}</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <button mat-fab extended color="primary" [disabled]="addingDisabled" (click)="addChart()">
+    Add chart
+  </button>
+
+  <button mat-fab extended color="primary" (click)="clearCharts()">
+    Clear
+  </button>
+</div>
+
+<p class="text-center p-4">
+  Displayed charts: {{dashboardCharts.length}} out of {{maxCharts.toString()}}.
+</p>
+
+<div class="flex flex-row">
+  <mat-form-field class="example-form-field">
+    <mat-label>Date range filter</mat-label>
+    <mat-date-range-input [rangePicker]="rangePicker">
+      <input
+        matStartDate
+        #dateRangeStart
+        (dateChange)="applyDateFilter(dateRangeStart.value, dateRangeEnd.value)"
+        placeholder="Start date">
+      <input
+        matEndDate
+        #dateRangeEnd
+        (dateChange)="applyDateFilter(dateRangeStart.value, dateRangeEnd.value)"
+        placeholder="End date">
+    </mat-date-range-input>
+    <mat-hint>MM/DD/YYYY - MM/DD/YYYY</mat-hint>
+    <mat-datepicker-toggle matIconSuffix [for]="rangePicker"></mat-datepicker-toggle>
+    <mat-date-range-picker #rangePicker>
+      <mat-date-range-picker-actions>
+        <button mat-button matDateRangePickerCancel>Cancel</button>
+        <button mat-raised-button color="primary" matDateRangePickerApply>Apply</button>
+      </mat-date-range-picker-actions>
+    </mat-date-range-picker>
+  </mat-form-field>
+</div>
+
+<div class="flex flex-wrap">
+  <common-chart class="p-2"
+  *ngFor="let chart of dashboardCharts"
+    [chartTitle]="chart.name"
+    [chartType]="chart.type"
+    [data]="chart.data"
+    [colorScheme]="chart.colours"
+    [startDate]="startDate"
+    [endDate]="endDate">
+</common-chart>
+</div>
